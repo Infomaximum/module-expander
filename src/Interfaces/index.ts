@@ -229,6 +229,8 @@ export declare namespace NCore {
   type TFeatureExt = {
     name: string;
     priority?: number;
+    // список операций, не влияющих на простановку операции READ
+    readIndependentOperations?: string[];
   };
 
   type TFeatureListExt = Record<string, TFeatureExt>;
