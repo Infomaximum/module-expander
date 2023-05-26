@@ -4,8 +4,8 @@ import type { NCore } from "./Interfaces";
 
 /**
  * Метод для расширения конфига роутинга
- * @param {IRoutes[]} mainRoutes - config роутинга, который нужно расширить
- * @param {IRoutes[]} addingRoutes - config роутинга, которым нужно расширить
+ * @param {NCore.IRoutes[]} mainRoutes - config роутинга, который нужно расширить
+ * @param {NCore.IRoutes[]} addingRoutes - config роутинга, которым нужно расширить
  */
 export const expandRoutes = (
   mainRoutes: NCore.IRoutes[],

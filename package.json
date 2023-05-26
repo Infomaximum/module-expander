@@ -16,7 +16,6 @@
     "@infomaximum/localization": "^1.0.3",
     "@infomaximum/assert": "^1.0.3",
     "@infomaximum/global-types": "^1.0.0",
-    "uuid": "9.0.0",
     "lodash": "^4.17.21",
     "react-router": "6.3.0"
   },
@@ -29,7 +28,6 @@
     "@types/lodash": "4.14.191",
     "@types/node": "14.0.1",
     "@types/react": "18.0.28",
-    "@types/uuid": "9.0.0",
     "@types/webpack-env": "1.18.0",
     "cross-env": "7.0.3",
     "husky": "^8.0.0",
