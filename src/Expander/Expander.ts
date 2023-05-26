@@ -224,8 +224,12 @@ export class Expander {
   private isConnectModule(
     module: IModuleExpander,
     resolvedModules: Set<string>,
-    subsystemsIds: Set<string>
+    subsystemsIds: Set<string> | undefined
   ) {
+    if (subsystemsIds === undefined) {
+      return true;
+    }
+
     const { isConnect, moduleName, dependencies } =
       this.getInjectModuleParams(module);
 
@@ -275,7 +279,7 @@ export class Expander {
   /**
    * Метод расширения всех конфигов
    */
-  public build(subsystemsIds: Set<string>) {
+  public build(subsystemsIds: Set<string> | undefined) {
     const resolvedModules = new Set<string>();
 
     forEach(this.sortedModules, (module) => {

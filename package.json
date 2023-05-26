@@ -15,6 +15,7 @@
     "@infomaximum/utility": "^7.0.0",
     "@infomaximum/localization": "^1.0.3",
     "@infomaximum/assert": "^1.0.3",
+    "@infomaximum/global-types": "^1.0.0",
     "uuid": "9.0.0",
     "lodash": "^4.17.21",
     "react-router": "6.3.0"
