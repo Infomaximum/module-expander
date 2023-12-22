@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/Infomaximum/module-expander/compare/v2.0.1...v2.1.0) (2023-12-22)
+
+
+### Features
+
+* добавлен messageContent ([a0d1860](https://github.com/Infomaximum/module-expander/commit/a0d1860d87c33e5b695d86f29bec816d6b380551))
+
 ### [2.0.1](https://github.com/Infomaximum/module-expander/compare/v2.0.0...v2.0.1) (2023-05-26)
 
 
