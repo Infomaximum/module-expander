@@ -145,6 +145,7 @@ export declare namespace NCore {
     /** Дополнительные параметры в ошибке  */
     params?: any;
     message?: string;
+    messageContent?: string | JSX.Element;
     comment?: string;
     title?: string;
     reloadOnClose?: boolean;
