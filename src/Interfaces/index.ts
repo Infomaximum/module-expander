@@ -1,8 +1,8 @@
 import type {
-  RouteObject,
   Location,
   NavigateFunction,
   PathMatch,
+  NonIndexRouteObject,
 } from "react-router";
 import type { TFeatureEnabledChecker } from "@infomaximum/utility";
 import type {
@@ -29,7 +29,7 @@ export declare namespace NCore {
     prefixLoc: TLocalizationDescription;
   };
 
-  interface IRoutes extends RouteObject {
+  interface IRoutes extends NonIndexRouteObject {
     /** Уникальный идентификатор роута */
     key?: string;
 
