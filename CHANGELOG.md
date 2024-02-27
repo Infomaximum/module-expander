@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/Infomaximum/module-expander/compare/v2.1.0...v2.2.0) (2024-02-27)
+
+
+### Features
+
+* обновлен react-router ([afcaa24](https://github.com/Infomaximum/module-expander/commit/afcaa24a76bed3486e6e83f1e80a01dd7e030fc0))
+
 ## [2.1.0](https://github.com/Infomaximum/module-expander/compare/v2.0.1...v2.1.0) (2023-12-22)
 
 
