@@ -12,7 +12,7 @@
   ],
   "dependencies": {
     "reflect-metadata": "0.1.13",
-    "@infomaximum/utility": "^7.0.0",
+    "@infomaximum/utility": "^8.0.0",
     "@infomaximum/localization": "^1.0.3",
     "@infomaximum/assert": "^1.0.3",
     "@infomaximum/global-types": "^1.0.0",
