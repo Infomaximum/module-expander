@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/Infomaximum/module-expander/compare/v2.2.1...v2.3.0) (2024-07-12)
+
+
+### Features
+
+* добавлено расширение лицензионных фич ([ef1f571](https://github.com/Infomaximum/module-expander/commit/ef1f5717a16c0b03ba3e223ef081c37c8aa3544c))
+
 ### [2.2.1](https://github.com/Infomaximum/module-expander/compare/v2.2.0...v2.2.1) (2024-04-25)
 
 ## [2.2.0](https://github.com/Infomaximum/module-expander/compare/v2.1.0...v2.2.0) (2024-02-27)

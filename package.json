@@ -1,6 +1,6 @@
 {
   "name": "@infomaximum/module-expander",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "typings": "dist/index.d.ts",
