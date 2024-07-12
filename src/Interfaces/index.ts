@@ -235,16 +235,20 @@ export declare namespace NCore {
   };
 
   type TFeatureListExt = Record<string, TFeatureExt>;
+  type TLicenseFeatureListExt = Record<string, Set<string>>;
 
   type TFeatureListExtFunc = () => TFeatureListExt;
+  type TLicenseFeatureListExtFunc = () => Record<string, Set<string>>;
 
   type TFeaturesConfig = {
     featureList: TFeatureListExt;
+    licenseFeatureList: TLicenseFeatureListExt;
     featureGroupList: TFeatureListExt;
   };
 
   type TFeaturesConfigFuncs = {
     featureList: TFeatureListExtFunc;
+    licenseFeatureList?: TLicenseFeatureListExtFunc;
     featureGroupList: TFeatureListExtFunc;
   };
 

@@ -34,6 +34,7 @@ export class Expander {
   private featuresConfig: NCore.TFeaturesConfig = {
     featureList: {},
     featureGroupList: {},
+    licenseFeatureList: {},
   };
   private theme: Record<string, any> = {};
 
@@ -149,6 +150,13 @@ export class Expander {
         Object.assign(
           this.featuresConfig.featureGroupList,
           featuresConfig.featureGroupList()
+        );
+      }
+
+      if (isFunction(featuresConfig.licenseFeatureList)) {
+        Object.assign(
+          this.featuresConfig.licenseFeatureList,
+          featuresConfig.licenseFeatureList()
         );
       }
     }
