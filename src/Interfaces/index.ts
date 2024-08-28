@@ -121,6 +121,8 @@ export declare namespace NCore {
     icon?: React.ElementType;
 
     component?: React.ComponentType<TRouteComponentProps<any, any>>;
+
+    isBeta?: boolean;
   }
 
   type TRouteComponentProps<
