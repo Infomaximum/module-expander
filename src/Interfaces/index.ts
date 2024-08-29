@@ -1,14 +1,6 @@
-import type {
-  Location,
-  NavigateFunction,
-  PathMatch,
-  NonIndexRouteObject,
-} from "react-router";
+import type { Location, NavigateFunction, PathMatch, NonIndexRouteObject } from "react-router";
 import type { TFeatureEnabledChecker } from "@infomaximum/utility";
-import type {
-  TLocalizationDescription,
-  Localization,
-} from "@infomaximum/localization";
+import type { TLocalizationDescription, Localization } from "@infomaximum/localization";
 
 export declare namespace NCore {
   // ---------------------------- Расширение RoutesConfig ---------------------------//
@@ -125,10 +117,7 @@ export declare namespace NCore {
     isBeta?: boolean;
   }
 
-  type TRouteComponentProps<
-    MatchParamsKey extends string = string,
-    S = Location["state"]
-  > = {
+  type TRouteComponentProps<MatchParamsKey extends string = string, S = Location["state"]> = {
     route: IRoutes;
     location: Location & { state: S };
     match: PathMatch<MatchParamsKey>;

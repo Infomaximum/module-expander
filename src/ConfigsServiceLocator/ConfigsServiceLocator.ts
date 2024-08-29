@@ -9,10 +9,7 @@ class ConfigsServiceLocator {
     this.isInitialize = true;
   }
 
-  public register<T extends TClass, K extends InstanceType<T>>(
-    Class: T,
-    instance: K
-  ) {
+  public register<T extends TClass, K extends InstanceType<T>>(Class: T, instance: K) {
     if (!this.isInitialize) {
       this.init();
     }

@@ -1,8 +1,5 @@
 import "reflect-metadata";
-import type {
-  IModuleExpander,
-  TModuleExpanderParams,
-} from "../ModuleExpander/ModuleExpander";
+import type { IModuleExpander, TModuleExpanderParams } from "../ModuleExpander/ModuleExpander";
 import { ModuleExpander } from "../ModuleExpander/ModuleExpander";
 import { Expander } from "../Expander/Expander";
 
@@ -42,11 +39,7 @@ export const defineModule =
 
     Module.moduleName = injectParams.moduleName;
 
-    Reflect.defineMetadata(
-      ModuleExpander.moduleInjectParamsKey,
-      injectParams,
-      ModuleInstance
-    );
+    Reflect.defineMetadata(ModuleExpander.moduleInjectParamsKey, injectParams, ModuleInstance);
 
     Expander.getInstance().expandModules(ModuleInstance);
   };

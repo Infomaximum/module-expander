@@ -1,18 +1,6 @@
 import "reflect-metadata";
-import {
-  isFunction,
-  forEach,
-  map,
-  orderBy,
-  every,
-  isArray,
-  isUndefined,
-  isBoolean,
-} from "lodash";
-import {
-  type IModuleExpander,
-  ModuleExpander,
-} from "../ModuleExpander/ModuleExpander";
+import { isFunction, forEach, map, orderBy, every, isArray, isUndefined, isBoolean } from "lodash";
+import { type IModuleExpander, ModuleExpander } from "../ModuleExpander/ModuleExpander";
 import { expandRoutes, expandErrorHandlers, expandTheme } from "../utils";
 import type { NCore } from "../Interfaces";
 import type { TModuleInjectParams } from "../defineModule/defineModule";
@@ -107,10 +95,7 @@ export class Expander {
         });
     });
 
-    return map(
-      orderBy(Array.from(dependencies.values()), countName, "desc"),
-      moduleName
-    );
+    return map(orderBy(Array.from(dependencies.values()), countName, "desc"), moduleName);
   }
 
   public expandModules(module: IModuleExpander) {
@@ -135,38 +120,25 @@ export class Expander {
     return this;
   }
 
-  private expandFeaturesConfig(
-    featuresConfig: NCore.TFeaturesConfigFuncs | null
-  ) {
+  private expandFeaturesConfig(featuresConfig: NCore.TFeaturesConfigFuncs | null) {
     if (featuresConfig) {
       if (isFunction(featuresConfig.featureList)) {
-        Object.assign(
-          this.featuresConfig.featureList,
-          featuresConfig.featureList()
-        );
+        Object.assign(this.featuresConfig.featureList, featuresConfig.featureList());
       }
 
       if (isFunction(featuresConfig.featureGroupList)) {
-        Object.assign(
-          this.featuresConfig.featureGroupList,
-          featuresConfig.featureGroupList()
-        );
+        Object.assign(this.featuresConfig.featureGroupList, featuresConfig.featureGroupList());
       }
 
       if (isFunction(featuresConfig.licenseFeatureList)) {
-        Object.assign(
-          this.featuresConfig.licenseFeatureList,
-          featuresConfig.licenseFeatureList()
-        );
+        Object.assign(this.featuresConfig.licenseFeatureList, featuresConfig.licenseFeatureList());
       }
     }
 
     return this;
   }
 
-  private expandExtendersConfig(
-    extendersConfig: NCore.TExtendersConfig | undefined
-  ) {
+  private expandExtendersConfig(extendersConfig: NCore.TExtendersConfig | undefined) {
     if (extendersConfig) {
       forEach(extendersConfig, (extenderFunc) => {
         if (extenderFunc && isFunction(extenderFunc)) {
@@ -238,8 +210,7 @@ export class Expander {
       return true;
     }
 
-    const { isConnect, moduleName, dependencies } =
-      this.getInjectModuleParams(module);
+    const { isConnect, moduleName, dependencies } = this.getInjectModuleParams(module);
 
     const isAllDependenciesAllowed =
       isArray(dependencies) &&
@@ -249,15 +220,10 @@ export class Expander {
       every(
         dependencies,
         (dependency) =>
-          resolvedModules.has(dependency.moduleName) ||
-          subsystemsIds.has(dependency.moduleName)
+          resolvedModules.has(dependency.moduleName) || subsystemsIds.has(dependency.moduleName)
       );
 
-    if (
-      isUndefined(isConnect) &&
-      isAllDependenciesAllowed &&
-      subsystemsIds.has(moduleName)
-    ) {
+    if (isUndefined(isConnect) && isAllDependenciesAllowed && subsystemsIds.has(moduleName)) {
       return true;
     }
 

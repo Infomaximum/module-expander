@@ -15,8 +15,7 @@ class ModuleBuilder {
    * @param subsystems - список uuid подключаемых модулей, если ничего не передаем(или undefined), то подключаются все модули
    */
   public static build(subsystems?: string[]) {
-    const subsystemsIds =
-      subsystems === undefined ? undefined : new Set<string>(subsystems);
+    const subsystemsIds = subsystems === undefined ? undefined : new Set<string>(subsystems);
 
     Expander.getInstance().build(subsystemsIds);
   }

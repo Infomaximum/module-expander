@@ -7,13 +7,9 @@ import type { NCore } from "./Interfaces";
  * @param {NCore.IRoutes[]} mainRoutes - config роутинга, который нужно расширить
  * @param {NCore.IRoutes[]} addingRoutes - config роутинга, которым нужно расширить
  */
-export const expandRoutes = (
-  mainRoutes: NCore.IRoutes[],
-  addingRoutes: NCore.IRoutes[]
-): void => {
+export const expandRoutes = (mainRoutes: NCore.IRoutes[], addingRoutes: NCore.IRoutes[]): void => {
   forEach(addingRoutes, (addingRoute) => {
-    const { key, routes, childRoutesFilter, ...restOfAddingRoute } =
-      addingRoute;
+    const { key, routes, childRoutesFilter, ...restOfAddingRoute } = addingRoute;
 
     const mainRoute = mainRoutes?.find((route) => route.key === key);
 
@@ -40,18 +36,8 @@ export const expandRoutes = (
             otherParamFilter
           ) {
             return (
-              originChildRoute(
-                route,
-                isFeatureEnabled,
-                location,
-                otherParamFilter
-              ) &&
-              childRoutesFilter(
-                route,
-                isFeatureEnabled,
-                location,
-                otherParamFilter
-              )
+              originChildRoute(route, isFeatureEnabled, location, otherParamFilter) &&
+              childRoutesFilter(route, isFeatureEnabled, location, otherParamFilter)
             );
           };
         } else {
@@ -95,11 +81,7 @@ export const expandErrorHandlers = (
   addingErrorHandlers: NCore.TErrorPreparer[]
 ) => {
   mainErrorHandlers.push(...addingErrorHandlers);
-  mainErrorHandlers.splice(
-    0,
-    mainErrorHandlers.length,
-    ...sortErrorHandlers(mainErrorHandlers)
-  );
+  mainErrorHandlers.splice(0, mainErrorHandlers.length, ...sortErrorHandlers(mainErrorHandlers));
 };
 
 export const showGlobalErrorModal = () => {
@@ -121,9 +103,6 @@ export const showGlobalErrorModal = () => {
  * @param mainTheme - объект темы, который нужно расширить
  * @param addingTheme - объект темы, которым нужно расширить
  */
-export const expandTheme = (
-  mainTheme: Record<string, any>,
-  addingTheme: Record<string, any>
-) => {
+export const expandTheme = (mainTheme: Record<string, any>, addingTheme: Record<string, any>) => {
   Object.assign(mainTheme, addingTheme);
 };
