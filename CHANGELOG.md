@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://github.com/Infomaximum/module-expander/compare/v2.4.1...v2.5.0) (2024-12-16)
+
+
+### Features
+
+* добавлена возможность исключить некоторые роуты по ключам ([c23c0df](https://github.com/Infomaximum/module-expander/commit/c23c0dff0c1952c5eda205553a6505f90bfad6db))
+
 ### [2.4.1](https://github.com/Infomaximum/module-expander/compare/v2.4.0...v2.4.1) (2024-09-18)
 
 ## [2.4.0](https://github.com/Infomaximum/module-expander/compare/v2.3.0...v2.4.0) (2024-08-28)
