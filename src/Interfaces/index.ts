@@ -133,7 +133,7 @@ export declare namespace NCore {
 
   type TRouteComponentProps<
     MatchParamsKey extends string = string,
-    S = Location["state"],
+    S = Location["state"]
   > = {
     route: IRoutes;
     location: Location & { state: S };
