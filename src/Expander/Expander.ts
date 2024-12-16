@@ -284,6 +284,48 @@ export class Expander {
     }
   }
 
+  private excludeRoutes() {
+    const excludingRouteKeys = this.getExcludingRouteKeys(this.routes);
+
+    return this.excludeRoutesByKeys(this.routes, excludingRouteKeys);
+  }
+
+  private getExcludingRouteKeys(routes: NCore.IRoutes[]) {
+    const routKeys = routes.reduce((acc: string[], route) => {
+      if (route?.excludingRouteKeys) {
+        acc.push(...route.excludingRouteKeys);
+      }
+
+      if (route?.routes) {
+        acc.push(...this.getExcludingRouteKeys(route.routes));
+      }
+
+      return acc;
+    }, []);
+
+    return new Set(routKeys);
+  }
+
+  private excludeRoutesByKeys(routes: NCore.IRoutes[], routeKeys: Set<string>) {
+    if (routeKeys.size === 0) {
+      return routes;
+    }
+
+    return routes.filter((route) => {
+      if (route?.key && routeKeys.has(route.key)) {
+        return false;
+      }
+
+      if (route?.routes) {
+        route.routes = this.excludeRoutesByKeys(route.routes, routeKeys);
+
+        return true;
+      }
+
+      return true;
+    });
+  }
+
   /**
    * Метод расширения всех конфигов
    */
@@ -311,6 +353,8 @@ export class Expander {
         }
       }
     });
+
+    this.excludeRoutes();
 
     this.isReadyApp = true;
     // Обязательно вызов функций должен быть после расширения всех конфигов и до вызова entrypoints

@@ -107,6 +107,12 @@ export declare namespace NCore {
     ): boolean;
 
     /**
+     * Содержит ключи роутов которые необходимо убрать из глобального роутинга системы. Данные роуты будут отфильтрованы
+     * сразу после объединения роутингов всех подключенных модулей
+     */
+    excludingRouteKeys?: string[];
+
+    /**
      * заголовок вкладки браузера
      */
     systemTitleLoc?: TLocalizationDescription;
@@ -127,7 +133,7 @@ export declare namespace NCore {
 
   type TRouteComponentProps<
     MatchParamsKey extends string = string,
-    S = Location["state"]
+    S = Location["state"],
   > = {
     route: IRoutes;
     location: Location & { state: S };
