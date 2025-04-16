@@ -1,6 +1,6 @@
 {
   "name": "@infomaximum/module-expander",
-  "version": "2.4.0",
+  "version": "2.6.0",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "typings": "dist/index.d.ts",
@@ -11,8 +11,8 @@
     "LICENSE"
   ],
   "dependencies": {
-    "reflect-metadata": "0.2.2",
-    "@infomaximum/utility": "^8.0.0",
+    "reflect-metadata": "0.1.13",
+    "@infomaximum/utility": "^9.0.0",
     "@infomaximum/localization": "^1.0.3",
     "@infomaximum/assert": "^1.0.3",
     "@infomaximum/global-types": "^1.0.0",
