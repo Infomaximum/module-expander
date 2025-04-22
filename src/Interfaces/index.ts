@@ -124,7 +124,6 @@ export declare namespace NCore {
     navigate: NavigateFunction;
   };
 
-  type TRoutesFunc = () => IRoutes[];
   // ---------------------------- Расширение RoutesConfig ---------------------------//
 
   // ---------------------------- Расширение ErrorsConfig ---------------------------//
@@ -213,8 +212,6 @@ export declare namespace NCore {
     }) => TError | undefined;
   };
 
-  type TErrorPreparersFunc = () => TErrorPreparer[];
-
   // ---------------------------- Расширение ErrorsConfig ---------------------------//
 
   // ---------------------------- Расширение FeaturesConfig ---------------------------//
@@ -228,29 +225,15 @@ export declare namespace NCore {
   type TFeatureListExt = Record<string, TFeatureExt>;
   type TLicenseFeatureListExt = Record<string, Set<string>>;
 
-  type TFeatureListExtFunc = () => TFeatureListExt;
-  type TLicenseFeatureListExtFunc = () => Record<string, Set<string>>;
-
   type TFeaturesConfig = {
     featureList: TFeatureListExt;
-    licenseFeatureList: TLicenseFeatureListExt;
+    licenseFeatureList?: TLicenseFeatureListExt;
     featureGroupList: TFeatureListExt;
-  };
-
-  type TFeaturesConfigFuncs = {
-    featureList: TFeatureListExtFunc;
-    licenseFeatureList?: TLicenseFeatureListExtFunc;
-    featureGroupList: TFeatureListExtFunc;
   };
 
   // ---------------------------- Расширение FeaturesConfig ---------------------------//
 
   // ---------------------------- Расширение ExtendersConfig ---------------------------//
   type TExtendersConfig = { [key: string]: () => void };
-  type TExtendersConfigFunc = () => TExtendersConfig;
   // ---------------------------- Расширение ExtendersConfig ---------------------------//
-
-  // ---------------------------- Расширение ThemeConfig ---------------------------//
-  type TThemeConfigFunc = () => Record<string, any>;
-  // ---------------------------- Расширение ThemeConfig ---------------------------//
 }

@@ -1,12 +1,12 @@
 /// <reference types="@infomaximum/global-types" />
 
 import { Expander } from "./Expander/Expander";
-import { ModuleExpander } from "./ModuleExpander/ModuleExpander";
-import type { IModuleExpander } from "./ModuleExpander/ModuleExpander";
 import { defineModule } from "./defineModule/defineModule";
 import type { NCore } from "./Interfaces";
 import { showGlobalErrorModal, sortErrorHandlers } from "./utils";
 import { getInstanceExt } from "./InjectConfigs/instanceExt";
+import type { IModule } from "./Module";
+import { Module } from "./Module";
 
 class ModuleBuilder {
   private constructor() {}
@@ -24,11 +24,11 @@ class ModuleBuilder {
 export {
   ModuleBuilder,
   Expander,
-  ModuleExpander,
+  Module,
   defineModule,
   sortErrorHandlers,
   getInstanceExt,
   showGlobalErrorModal,
 };
 
-export type { NCore, IModuleExpander };
+export type { NCore, IModule };

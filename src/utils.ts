@@ -2,6 +2,8 @@ import { forEach, uniq, sortBy, isPlainObject, set } from "lodash";
 import { assertSimple } from "@infomaximum/assert";
 import type { NCore } from "./Interfaces";
 
+export type Nullable<T> = T | null | undefined;
+
 /**
  * Метод для расширения конфига роутинга
  * @param {NCore.IRoutes[]} mainRoutes - config роутинга, который нужно расширить

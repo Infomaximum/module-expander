@@ -1,18 +1,11 @@
-import "reflect-metadata";
-import type { IModuleExpander, TModuleExpanderParams } from "../ModuleExpander/ModuleExpander";
-import { ModuleExpander } from "../ModuleExpander/ModuleExpander";
 import { Expander } from "../Expander/Expander";
+import type { Module } from "../Module";
 
-interface IModuleClass {
-  new (params: TModuleExpanderParams): IModuleExpander;
-  moduleName: string;
-}
+type ModuleGetter = () => Promise<typeof Module>;
 
-export type TModuleInjectParams = {
-  /** список прямых зависимостей модуля без которых он не будет подключаться. */
-  dependencies: IModuleClass[];
-  /** имя модуля */
-  moduleName: string;
+type TDefineModuleParams = {
+  /** идентификатор модуля на сервере */
+  moduleId: string;
   /** флаг отвечающий за подключение модуля
    *
    * `undefined`_(по умолчанию)_ - модуль будет подключаться если модуль подключен на сервере
@@ -23,23 +16,12 @@ export type TModuleInjectParams = {
    *
    * `false` - модуль не будет подключен, даже если он подключен на сервере */
   isConnect?: boolean;
+
+  moduleGetter: ModuleGetter;
 };
 
-type TDefineModuleParams = Omit<TModuleExpanderParams, "name"> & {
-  injectParams: TModuleInjectParams;
+export const defineModule = ({ moduleId, moduleGetter, isConnect }: TDefineModuleParams) => {
+  Expander.getInstance().registerModule(moduleId, moduleGetter, {
+    isConnect,
+  });
 };
-
-export const defineModule =
-  ({ injectParams, ...rest }: TDefineModuleParams) =>
-  <T extends IModuleClass>(Module: T) => {
-    const ModuleInstance = new Module({
-      ...rest,
-      name: injectParams.moduleName,
-    });
-
-    Module.moduleName = injectParams.moduleName;
-
-    Reflect.defineMetadata(ModuleExpander.moduleInjectParamsKey, injectParams, ModuleInstance);
-
-    Expander.getInstance().expandModules(ModuleInstance);
-  };
