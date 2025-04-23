@@ -1,4 +1,3 @@
-import { isFunction, forEach, map, orderBy, every, isArray, isUndefined, isBoolean } from "lodash";
 import { expandRoutes, expandErrorHandlers, expandTheme, type Nullable } from "../utils";
 import type { NCore } from "../Interfaces";
 import type { IModule, Module } from "../Module";
@@ -85,8 +84,8 @@ export class Expander {
     dependencies.forEach((params) => {
       const directDependencies = params[moduleName].dependencies.map((d) => d.instance.moduleId);
 
-      isArray(directDependencies) &&
-        forEach(directDependencies, (dependency) => {
+      Array.isArray(directDependencies) &&
+        directDependencies.forEach((dependency) => {
           const dependencyMeta = dependencies.get(dependency);
 
           if (dependencyMeta) {
@@ -98,7 +97,9 @@ export class Expander {
         });
     });
 
-    return map(orderBy(Array.from(dependencies.values()), countName, "desc"), moduleName);
+    return Array.from(dependencies.values())
+      .sort((a, b) => b[countName] - a[countName])
+      .map((entry) => entry[moduleName]);
   }
 
   public registerModule(moduleId: string, moduleGetter: ModuleGetter, metadata: ModuleMetadata) {
@@ -179,12 +180,11 @@ export class Expander {
     const { instance } = module;
 
     const isAllDependenciesAllowed =
-      isArray(instance.dependencies) &&
+      Array.isArray(instance.dependencies) &&
       /* c resolvedModules могут быть проблемы, если модуль зависит от модуля с наименьшим числом зависимостей,
       поэтому проверяем в крайнем случае и возможность модуля подключиться в дальнейшем (не безопасно, но и не нужно)
        */
-      every(
-        instance.dependencies,
+      instance.dependencies.every(
         (dependency) =>
           this.resolvedModules.has(dependency.instance) ||
           subsystemsIds.has(dependency.instance.moduleId)
@@ -299,11 +299,11 @@ export class Expander {
 
     this.isReadyApp = true;
     // Обязательно вызов функций должен быть после расширения всех конфигов и до вызова entrypoints
-    forEach(this.whenAppReadyCallbacks, (callback) => callback());
+    this.whenAppReadyCallbacks.forEach((callback) => callback());
 
     // Обязательно, вызов этих функций должен быть последним
     this.entrypointList.forEach((entrypointGetter) => {
-      if (isFunction(entrypointGetter)) {
+      if (typeof entrypointGetter === "function") {
         entrypointGetter();
       }
     });
