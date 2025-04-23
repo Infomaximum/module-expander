@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.1](https://github.com/Infomaximum/module-expander/compare/v2.5.0...v2.6.1) (2025-04-23)
+
 ### [2.4.1](https://github.com/Infomaximum/module-expander/compare/v2.4.0...v2.4.1) (2024-09-18)
 
 ## [2.4.0](https://github.com/Infomaximum/module-expander/compare/v2.3.0...v2.4.0) (2024-08-28)
