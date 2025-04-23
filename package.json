@@ -42,7 +42,7 @@
   "scripts": {
     "release": "tsc && standard-version && rollup -c",
     "build": "rollup -c",
-    "test": "cross-env NODE_ENV=test jest --passWithNoTests",
+    "test": "tsc -p tsconfig.json",
     "lint": "tsc -p tsconfig.json",
     "prettier": "prettier --find-config-path --write 'src/**/*'",
     "prepare": "husky install"
