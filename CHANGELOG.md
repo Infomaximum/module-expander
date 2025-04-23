@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-0](https://github.com/Infomaximum/module-expander/compare/v2.5.0...v3.0.0-0) (2025-04-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* переписан механизм подключения модулей
+
+### Features
+
+* динамическое подключение модулей ([d0cc1ec](https://github.com/Infomaximum/module-expander/commit/d0cc1ec29119b91a12decfc03973350872e61b13))
+* подключение модуля если все зависимости были зарезолвлены ([c3b76ea](https://github.com/Infomaximum/module-expander/commit/c3b76eae5f2bed2d1a60982a94783a63f3a86100))
+
 ### [2.4.1](https://github.com/Infomaximum/module-expander/compare/v2.4.0...v2.4.1) (2024-09-18)
 
 ## [2.4.0](https://github.com/Infomaximum/module-expander/compare/v2.3.0...v2.4.0) (2024-08-28)
