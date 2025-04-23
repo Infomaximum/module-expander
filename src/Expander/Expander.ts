@@ -26,9 +26,14 @@ export type ModuleMetadata = {
   isConnect?: boolean | undefined;
 };
 
+type ModuleWithMetadata = {
+  moduleGetter: ModuleGetter;
+  metadata: ModuleMetadata;
+};
+
 export class Expander {
   private static instance: Expander;
-  private modules = new Map<string, { moduleGetter: ModuleGetter; metadata: ModuleMetadata }>();
+  private modules = new Map<string, ModuleWithMetadata>();
   private resolvedModules = new Set<IModule>();
   private routes: NCore.IRoutes[] = [];
   private entrypointList: (() => void)[] = [];
@@ -170,41 +175,23 @@ export class Expander {
     return this.theme;
   }
 
-  /**
-   * описание логики работа в описании типа `TModuleInjectParams["isConnect"]`
-   */
-  private isConnectModule(
-    module: IModule,
-    resolvedModules: Set<string>,
-    subsystemsIds: Set<string> | undefined
-  ) {
-    if (subsystemsIds === undefined) {
-      return true;
-    }
-
-    const { isConnect, moduleName, dependencies } = {} as any;
+  private isConnectModule(module: typeof Module, subsystemsIds: Set<string>) {
+    const { instance } = module;
 
     const isAllDependenciesAllowed =
-      isArray(dependencies) &&
+      isArray(instance.dependencies) &&
       /* c resolvedModules могут быть проблемы, если модуль зависит от модуля с наименьшим числом зависимостей,
       поэтому проверяем в крайнем случае и возможность модуля подключиться в дальнейшем (не безопасно, но и не нужно)
        */
       every(
-        dependencies,
+        instance.dependencies,
         (dependency) =>
-          resolvedModules.has(dependency.moduleName) || subsystemsIds.has(dependency.moduleName)
+          this.resolvedModules.has(dependency.instance) ||
+          subsystemsIds.has(dependency.instance.moduleId)
       );
 
-    if (isUndefined(isConnect) && isAllDependenciesAllowed && subsystemsIds.has(moduleName)) {
+    if (isAllDependenciesAllowed && subsystemsIds.has(instance.moduleId)) {
       return true;
-    }
-
-    if (isBoolean(isConnect) && isConnect && isAllDependenciesAllowed) {
-      return true;
-    }
-
-    if (isBoolean(isConnect) && !isConnect) {
-      return false;
     }
 
     return false;
@@ -266,21 +253,31 @@ export class Expander {
   }
 
   private async buildByModuleIds(subsystemsIds: Set<string>) {
-    const connectedModules = Array.from(subsystemsIds.values())
-      .map((id) => this.modules.get(id))
-      .filter((m) => !!m);
+    const modules = this.modules.entries().reduce((acc, [moduleId, module]) => {
+      if (
+        !acc.has(module) &&
+        ((subsystemsIds.has(moduleId) && module.metadata.isConnect !== false) ||
+          module.metadata.isConnect)
+      ) {
+        acc.add(module);
+      }
 
-    const manualConnectedModules = this.modules
-      .values()
-      .map((m) => (m.metadata.isConnect ? m : null))
-      .filter((m) => !!m);
-
-    const modules = [...connectedModules, ...manualConnectedModules].filter(
-      (m) => m.metadata.isConnect === false
-    );
+      return acc;
+    }, new Set<ModuleWithMetadata>());
 
     for await (const { moduleGetter } of modules) {
       const module = await moduleGetter();
+
+      if (!this.isConnectModule(module, subsystemsIds)) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.error(
+            `Модуль c id = ${module.instance.moduleId} не подключен, так как не были зарезолвлены все неободимые зависимости`
+          );
+        }
+
+        continue;
+      }
 
       this.resolvedModules.add(module.instance);
 
