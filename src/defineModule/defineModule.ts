@@ -17,11 +17,11 @@ type TDefineModuleParams = {
    * `false` - модуль не будет подключен, даже если он подключен на сервере */
   isConnect?: boolean;
 
-  moduleGetter: ModuleGetter;
+  resolveModuleEntry: ModuleGetter;
 };
 
-export const defineModule = ({ moduleId, moduleGetter, isConnect }: TDefineModuleParams) => {
-  Expander.getInstance().registerModule(moduleId, moduleGetter, {
+export const defineModule = ({ moduleId, resolveModuleEntry, isConnect }: TDefineModuleParams) => {
+  Expander.getInstance().registerModule(moduleId, resolveModuleEntry, {
     isConnect,
   });
 };

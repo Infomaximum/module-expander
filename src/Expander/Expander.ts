@@ -10,7 +10,7 @@ type TModuleMapSorted = {
   count: number;
 };
 
-type ModuleGetter = () => Promise<typeof Module>;
+export type ResolveModuleEntry = () => Promise<typeof Module>;
 
 export type ModuleMetadata = {
   /** флаг отвечающий за подключение модуля
@@ -26,7 +26,7 @@ export type ModuleMetadata = {
 };
 
 type ModuleWithMetadata = {
-  moduleGetter: ModuleGetter;
+  resolveModuleEntry: ResolveModuleEntry;
   metadata: ModuleMetadata;
 };
 
@@ -102,8 +102,12 @@ export class Expander {
       .map((entry) => entry[moduleName]);
   }
 
-  public registerModule(moduleId: string, moduleGetter: ModuleGetter, metadata: ModuleMetadata) {
-    this.modules.set(moduleId, { moduleGetter, metadata });
+  public registerModule(
+    moduleId: string,
+    resolveModuleEntry: ResolveModuleEntry,
+    metadata: ModuleMetadata
+  ) {
+    this.modules.set(moduleId, { resolveModuleEntry, metadata });
 
     return this;
   }
@@ -243,8 +247,8 @@ export class Expander {
   }
 
   private async buildAllModules() {
-    for await (const [, { moduleGetter }] of this.modules) {
-      const module = await moduleGetter();
+    for await (const [, { resolveModuleEntry }] of this.modules) {
+      const module = await resolveModuleEntry();
 
       this.resolvedModules.add(module.instance);
 
@@ -265,8 +269,8 @@ export class Expander {
       return acc;
     }, new Set<ModuleWithMetadata>());
 
-    for await (const { moduleGetter } of modules) {
-      const module = await moduleGetter();
+    for await (const { resolveModuleEntry } of modules) {
+      const module = await resolveModuleEntry();
 
       if (!this.isConnectModule(module, subsystemsIds)) {
         if (process.env.NODE_ENV !== "production") {

@@ -1,6 +1,6 @@
 /// <reference types="@infomaximum/global-types" />
 
-import { Expander } from "./Expander/Expander";
+import { Expander, type ResolveModuleEntry } from "./Expander/Expander";
 import { defineModule } from "./defineModule/defineModule";
 import type { NCore } from "./Interfaces";
 import { showGlobalErrorModal, sortErrorHandlers } from "./utils";
@@ -31,4 +31,4 @@ export {
   showGlobalErrorModal,
 };
 
-export type { NCore, IModule };
+export type { NCore, IModule, ResolveModuleEntry };
