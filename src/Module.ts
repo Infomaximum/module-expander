@@ -1,5 +1,5 @@
 import type { NCore } from "./Interfaces";
-import type { Nullable } from "./utils";
+import type { Awaitable } from "./utils";
 
 export interface IModule {
   moduleId: string;
@@ -8,21 +8,21 @@ export interface IModule {
   dependencies: (typeof Module)[];
 
   /** Список роутов добавляемых модулем */
-  getRoutes?(): Nullable<NCore.IRoutes[]>;
+  getRoutes?(): Awaitable<NCore.IRoutes[]>;
   /** Обработка рендеринга в DOM  */
-  getEntrypoint?(): void;
+  getEntrypoint?(): Awaitable<void>;
   /** Список ошибок для модуля  */
-  getErrorsConfig?(): Nullable<NCore.TErrorPreparer[]>;
+  getErrorsConfig?(): Awaitable<NCore.TErrorPreparer[]>;
   /** Конфиг фич модуля  */
-  getFeaturesConfig?(): Nullable<NCore.TFeaturesConfig>;
+  getFeaturesConfig?(): Awaitable<NCore.TFeaturesConfig>;
   /** Расширение темы из модуля */
-  getThemeConfig?(): Nullable<Record<string, any>>;
+  getThemeConfig?(): Awaitable<Record<string, any>>;
   /** Расширения модуля  */
-  registerExtensions?(): void;
+  registerExtensions?(): Awaitable<void>;
   /** Модели модуля */
-  registerModels?(): void;
+  registerModels?(): Awaitable<void>;
   /** Побочные эффекты при инициализации модуля */
-  onInitialize?(): void;
+  onInitialize?(): Awaitable<void>;
 }
 
 export abstract class Module implements IModule {
@@ -32,7 +32,7 @@ export abstract class Module implements IModule {
     const constructor = this.constructor as typeof Module;
 
     if (constructor._instance) {
-      throw new Error("Инстанс уже был создан");
+      throw new Error("Instance has already been created");
     }
 
     constructor._instance = this;

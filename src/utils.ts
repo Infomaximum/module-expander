@@ -3,6 +3,7 @@ import { assertSimple } from "@infomaximum/assert";
 import type { NCore } from "./Interfaces";
 
 export type Nullable<T> = T | null | undefined;
+export type Awaitable<T> = T | Promise<T>;
 
 /**
  * Метод для расширения конфига роутинга

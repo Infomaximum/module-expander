@@ -1,4 +1,10 @@
-import { expandRoutes, expandErrorHandlers, expandTheme, type Nullable } from "../utils";
+import {
+  expandRoutes,
+  expandErrorHandlers,
+  expandTheme,
+  type Nullable,
+  type Awaitable,
+} from "../utils";
 import type { NCore } from "../Interfaces";
 import type { IModule, Module } from "../Module";
 
@@ -35,7 +41,7 @@ export class Expander {
   private modules = new Map<string, ModuleWithMetadata>();
   private resolvedModules = new Set<IModule>();
   private routes: NCore.IRoutes[] = [];
-  private entrypointList: (() => void)[] = [];
+  private entrypointList: Awaitable<(() => void) | null>[] = [];
   private errorsConfig: NCore.TErrorPreparer[] = [];
   private featuresConfig = {
     featureList: {},
@@ -148,7 +154,7 @@ export class Expander {
     return this;
   }
 
-  private expandEntryPoint(entrypoint: (() => void) | null) {
+  private expandEntryPoint(entrypoint: Awaitable<(() => void) | null>) {
     if (entrypoint) {
       this.entrypointList.push(entrypoint);
     }
@@ -213,18 +219,18 @@ export class Expander {
     }
   }
 
-  public connectModule(module: IModule) {
-    module.registerModels?.();
+  public async connectModule(module: IModule) {
+    await module.registerModels?.();
 
-    this.expandRoutes(module.getRoutes?.());
-    this.expandErrorsConfig(module.getErrorsConfig?.());
-    this.expandFeaturesConfig(module.getFeaturesConfig?.());
+    this.expandRoutes(await module.getRoutes?.());
+    this.expandErrorsConfig(await module.getErrorsConfig?.());
+    this.expandFeaturesConfig(await module.getFeaturesConfig?.());
 
-    module.registerExtensions?.();
+    await module.registerExtensions?.();
 
-    this.expandTheme(module.getThemeConfig?.());
+    this.expandTheme(await module.getThemeConfig?.());
 
-    module.onInitialize?.();
+    await module.onInitialize?.();
 
     this.expandEntryPoint(() => module.getEntrypoint?.());
 
@@ -299,17 +305,19 @@ export class Expander {
       await this.buildByModuleIds(subsystemsIds);
     }
 
-    this.sortedModules.forEach((module) => this.connectModule(module));
+    for await (const module of this.sortedModules) {
+      await this.connectModule(module);
+    }
 
     this.isReadyApp = true;
     // Обязательно вызов функций должен быть после расширения всех конфигов и до вызова entrypoints
     this.whenAppReadyCallbacks.forEach((callback) => callback());
 
     // Обязательно, вызов этих функций должен быть последним
-    this.entrypointList.forEach((entrypointGetter) => {
+    for await (const entrypointGetter of this.entrypointList) {
       if (typeof entrypointGetter === "function") {
         entrypointGetter();
       }
-    });
+    }
   }
 }
