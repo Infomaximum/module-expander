@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-2](https://github.com/Infomaximum/module-expander/compare/v3.0.0-1...v3.0.0-2) (2025-04-24)
+
+
+### Bug Fixes
+
+* переименован резолвер модуля ([11c889e](https://github.com/Infomaximum/module-expander/commit/11c889ee934a2ba919ecbe5f1163c43c091135dd))
+
 ## [3.0.0-1](https://github.com/Infomaximum/module-expander/compare/v3.0.0-0...v3.0.0-1) (2025-04-23)
 
 ## [3.0.0-0](https://github.com/Infomaximum/module-expander/compare/v2.5.0...v3.0.0-0) (2025-04-23)
