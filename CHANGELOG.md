@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-3](https://github.com/Infomaximum/module-expander/compare/v3.0.0-2...v3.0.0-3) (2025-04-25)
+
+
+### Features
+
+* добавлена возможность использовать асинхронные функции ([a6a7bba](https://github.com/Infomaximum/module-expander/commit/a6a7bbab7f0fd3545d579e8feef122f80d113f96))
+
 ## [3.0.0-2](https://github.com/Infomaximum/module-expander/compare/v3.0.0-1...v3.0.0-2) (2025-04-24)
 
 
