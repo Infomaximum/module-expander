@@ -42,7 +42,8 @@
     "typescript": "~5.8.3"
   },
   "scripts": {
-    "release": "tsc && standard-version && rollup -c",
+    "release": "tsc && standard-version",
+    "prerelease": "tsc && standard-version -p",
     "build": "rollup -c",
     "test": "tsc -p tsconfig.json",
     "lint": "tsc -p tsconfig.json",
