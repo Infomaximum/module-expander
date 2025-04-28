@@ -1,9 +1,7 @@
-/// <reference types="@infomaximum/global-types" />
-
 import { Expander, type ResolveModuleEntry } from "./Expander/Expander";
 import { defineModule } from "./defineModule/defineModule";
-import type { NCore } from "./Interfaces";
-import { showGlobalErrorModal, sortErrorHandlers } from "./utils";
+import type { Route, ErrorPayload } from "./Interfaces";
+import { sortErrorHandlers } from "./utils";
 import { getInstanceExt } from "./InjectConfigs/instanceExt";
 import type { IModule } from "./Module";
 import { Module } from "./Module";
@@ -21,14 +19,6 @@ class ModuleBuilder {
   }
 }
 
-export {
-  ModuleBuilder,
-  Expander,
-  Module,
-  defineModule,
-  sortErrorHandlers,
-  getInstanceExt,
-  showGlobalErrorModal,
-};
+export { ModuleBuilder, Expander, Module, defineModule, sortErrorHandlers, getInstanceExt };
 
-export type { NCore, IModule, ResolveModuleEntry };
+export type { Route, ErrorPayload, IModule, ResolveModuleEntry };

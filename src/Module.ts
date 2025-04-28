@@ -1,4 +1,4 @@
-import type { NCore } from "./Interfaces";
+import type { ErrorPayload, Route } from "./Interfaces";
 import type { Awaitable } from "./utils";
 
 export interface IModule {
@@ -8,13 +8,13 @@ export interface IModule {
   dependencies: (typeof Module)[];
 
   /** Список роутов добавляемых модулем */
-  getRoutes?(): Awaitable<NCore.IRoute[]>;
+  getRoutesConfig?(): Awaitable<Route[]>;
   /** Обработка рендеринга в DOM  */
   getEntrypoint?(): Awaitable<void>;
   /** Список ошибок для модуля  */
-  getErrorsConfig?(): Awaitable<NCore.TErrorPreparer[]>;
+  getErrorsConfig?(): Awaitable<ErrorPayload[]>;
   /** Конфиг фич модуля  */
-  getFeaturesConfig?(): Awaitable<NCore.TFeaturesConfig>;
+  getFeaturesConfig?(): Awaitable<Record<string, unknown>>;
   /** Расширение темы из модуля */
   getThemeConfig?(): Awaitable<Record<string, any>>;
   /** Расширения модуля  */

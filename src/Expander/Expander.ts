@@ -5,7 +5,7 @@ import {
   type Nullable,
   type Awaitable,
 } from "../utils";
-import type { NCore } from "../Interfaces";
+import type { ErrorPayload, Route } from "../Interfaces";
 import type { IModule, Module } from "../Module";
 
 type TModuleMapSorted = {
@@ -40,14 +40,10 @@ export class Expander {
   private static instance: Expander;
   private modules = new Map<string, ModuleWithMetadata>();
   private resolvedModules = new Set<IModule>();
-  private routes: NCore.IRoute[] = [];
+  private routes: Route[] = [];
   private entrypointList: Awaitable<(() => void) | null>[] = [];
-  private errorsConfig: NCore.TErrorPreparer[] = [];
-  private featuresConfig = {
-    featureList: {},
-    featureGroupList: {},
-    licenseFeatureList: {},
-  } satisfies NCore.TFeaturesConfig;
+  private errorsConfig: ErrorPayload[] = [];
+  private featuresConfig: Record<string, unknown> = {};
   private theme: Record<string, any> = {};
 
   /** Флаг указывает на то, что приложение готово к вызову entrypoints */
@@ -118,7 +114,7 @@ export class Expander {
     return this;
   }
 
-  private expandRoutes(routesConfig: Nullable<NCore.IRoute[]>) {
+  private expandRoutes(routesConfig: Nullable<Route[]>) {
     if (routesConfig) {
       expandRoutes(this.routes, routesConfig);
     }
@@ -126,7 +122,7 @@ export class Expander {
     return this;
   }
 
-  private expandErrorsConfig(errorsConfig: Nullable<NCore.TErrorPreparer[]>) {
+  private expandErrorsConfig(errorsConfig: Nullable<ErrorPayload[]>) {
     if (errorsConfig) {
       expandErrorHandlers(this.errorsConfig, errorsConfig);
     }
@@ -134,22 +130,20 @@ export class Expander {
     return this;
   }
 
-  private expandFeaturesConfig(featuresConfig: Nullable<NCore.TFeaturesConfig>) {
+  private expandFeaturesConfig(featuresConfig: Nullable<Record<string, unknown>>) {
     if (!featuresConfig) {
       return this;
     }
 
-    if (featuresConfig.featureList) {
-      Object.assign(this.featuresConfig.featureList, featuresConfig.featureList);
-    }
+    Object.keys(featuresConfig).forEach((key) => {
+      if (key && !this.featuresConfig[key]) {
+        this.featuresConfig[key] = {};
+      }
 
-    if (featuresConfig.featureGroupList) {
-      Object.assign(this.featuresConfig.featureGroupList, featuresConfig.featureGroupList);
-    }
-
-    if (featuresConfig.licenseFeatureList) {
-      Object.assign(this.featuresConfig.licenseFeatureList, featuresConfig.licenseFeatureList);
-    }
+      if (this.featuresConfig[key]) {
+        Object.assign(this.featuresConfig[key], featuresConfig[key]);
+      }
+    });
 
     return this;
   }
@@ -178,7 +172,7 @@ export class Expander {
     return this.errorsConfig;
   }
 
-  public getFeaturesConfig(): NCore.TFeaturesConfig {
+  public getFeaturesConfig(): Record<string, unknown> {
     return this.featuresConfig;
   }
 
@@ -222,7 +216,7 @@ export class Expander {
   public async connectModule(module: IModule) {
     await module.registerModels?.();
 
-    this.expandRoutes(await module.getRoutes?.());
+    this.expandRoutes(await module.getRoutesConfig?.());
     this.expandErrorsConfig(await module.getErrorsConfig?.());
     this.expandFeaturesConfig(await module.getFeaturesConfig?.());
 
