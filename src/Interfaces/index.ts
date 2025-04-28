@@ -1,6 +1,6 @@
 export type Route = {
-  key: string;
-  routes: Route[];
+  key?: string;
+  routes?: Route[];
 
   /**
    * Обрабатывает дочерние роуты компонента. Вызывается для каждого роута из {@link routes} и должен вернуть true или
