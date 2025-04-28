@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-5](https://github.com/Infomaximum/module-expander/compare/v2.6.2...v3.0.0-5) (2025-04-28)
+
+## [3.0.0-4](https://github.com/Infomaximum/module-expander/compare/v3.0.0-3...v3.0.0-4) (2025-04-25)
+
+## [3.0.0-3](https://github.com/Infomaximum/module-expander/compare/v3.0.0-2...v3.0.0-3) (2025-04-25)
+
+
+### Features
+
+* добавлена возможность использовать асинхронные функции ([a6a7bba](https://github.com/Infomaximum/module-expander/commit/a6a7bbab7f0fd3545d579e8feef122f80d113f96))
+
+## [3.0.0-2](https://github.com/Infomaximum/module-expander/compare/v2.6.1...v3.0.0-2) (2025-04-24)
+
+
+### Bug Fixes
+
+* переименован резолвер модуля ([11c889e](https://github.com/Infomaximum/module-expander/commit/11c889ee934a2ba919ecbe5f1163c43c091135dd))
+
+## [3.0.0-1](https://github.com/Infomaximum/module-expander/compare/v3.0.0-0...v3.0.0-1) (2025-04-23)
+
+## [3.0.0-0](https://github.com/Infomaximum/module-expander/compare/v2.5.0...v3.0.0-0) (2025-04-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* переписан механизм подключения модулей
+
+### Features
+
+* динамическое подключение модулей ([d0cc1ec](https://github.com/Infomaximum/module-expander/commit/d0cc1ec29119b91a12decfc03973350872e61b13))
+* подключение модуля если все зависимости были зарезолвлены ([c3b76ea](https://github.com/Infomaximum/module-expander/commit/c3b76eae5f2bed2d1a60982a94783a63f3a86100))
+
 ## [3.0.0-4](https://github.com/Infomaximum/module-expander/compare/v3.0.0-3...v3.0.0-4) (2025-04-25)
 
 ## [3.0.0-3](https://github.com/Infomaximum/module-expander/compare/v3.0.0-2...v3.0.0-3) (2025-04-25)
