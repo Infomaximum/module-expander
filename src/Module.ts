@@ -8,7 +8,7 @@ export interface IModule {
   dependencies: (typeof Module)[];
 
   /** Список роутов добавляемых модулем */
-  getRoutes?(): Awaitable<NCore.IRoutes[]>;
+  getRoutes?(): Awaitable<NCore.IRoute[]>;
   /** Обработка рендеринга в DOM  */
   getEntrypoint?(): Awaitable<void>;
   /** Список ошибок для модуля  */

@@ -21,7 +21,7 @@ export declare namespace NCore {
     prefixLoc: TLocalizationDescription;
   };
 
-  interface IRoutes extends NonIndexRouteObject {
+  interface IRoute extends NonIndexRouteObject {
     /** Уникальный идентификатор роута */
     key?: string;
 
@@ -44,7 +44,7 @@ export declare namespace NCore {
     priority?: number;
 
     /** Вложенные роуты */
-    routes?: IRoutes[];
+    routes?: IRoute[];
 
     /**
      * Привилегии, наличие которых необходимо для отображения компонентов из ветви роутинга. Если доступы не указаны,
@@ -92,7 +92,7 @@ export declare namespace NCore {
      * {@link childRoutesFilter}.
      */
     childRoutesFilter?(
-      route: IRoutes,
+      route: IRoute,
       isFeatureEnabled: TFeatureEnabledChecker | undefined,
       location: TRouteComponentProps["location"],
       otherParamFilter?: any
@@ -118,7 +118,7 @@ export declare namespace NCore {
   }
 
   type TRouteComponentProps<MatchParamsKey extends string = string, S = Location["state"]> = {
-    route: IRoutes;
+    route: IRoute;
     location: Location & { state: S };
     match: PathMatch<MatchParamsKey>;
     navigate: NavigateFunction;

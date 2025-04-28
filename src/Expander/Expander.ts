@@ -40,7 +40,7 @@ export class Expander {
   private static instance: Expander;
   private modules = new Map<string, ModuleWithMetadata>();
   private resolvedModules = new Set<IModule>();
-  private routes: NCore.IRoutes[] = [];
+  private routes: NCore.IRoute[] = [];
   private entrypointList: Awaitable<(() => void) | null>[] = [];
   private errorsConfig: NCore.TErrorPreparer[] = [];
   private featuresConfig = {
@@ -118,7 +118,7 @@ export class Expander {
     return this;
   }
 
-  private expandRoutes(routesConfig: Nullable<NCore.IRoutes[]>) {
+  private expandRoutes(routesConfig: Nullable<NCore.IRoute[]>) {
     if (routesConfig) {
       expandRoutes(this.routes, routesConfig);
     }

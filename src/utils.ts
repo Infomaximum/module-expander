@@ -7,10 +7,10 @@ export type Awaitable<T> = T | Promise<T>;
 
 /**
  * Метод для расширения конфига роутинга
- * @param {NCore.IRoutes[]} mainRoutes - config роутинга, который нужно расширить
- * @param {NCore.IRoutes[]} addingRoutes - config роутинга, которым нужно расширить
+ * @param {NCore.IRoute[]} mainRoutes - config роутинга, который нужно расширить
+ * @param {NCore.IRoute[]} addingRoutes - config роутинга, которым нужно расширить
  */
-export const expandRoutes = (mainRoutes: NCore.IRoutes[], addingRoutes: NCore.IRoutes[]): void => {
+export const expandRoutes = (mainRoutes: NCore.IRoute[], addingRoutes: NCore.IRoute[]): void => {
   forEach(addingRoutes, (addingRoute) => {
     const { key, routes, childRoutesFilter, ...restOfAddingRoute } = addingRoute;
 
