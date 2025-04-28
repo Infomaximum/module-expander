@@ -136,7 +136,6 @@ export declare namespace NCore {
     params?: any;
     message?: string;
     messageContent?: string | JSX.Element;
-    comment?: string;
     title?: string;
     reloadOnClose?: boolean;
     traceId?: string;
