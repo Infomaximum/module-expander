@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-6](https://github.com/Infomaximum/module-expander/compare/v3.0.0-5...v3.0.0-6) (2025-04-28)
+
+
+### Bug Fixes
+
+* IRoutes -> IRoute ([32af890](https://github.com/Infomaximum/module-expander/commit/32af890f6329a4b87da519ffe0fef7308ef17fad))
+
 ## [3.0.0-5](https://github.com/Infomaximum/module-expander/compare/v2.6.2...v3.0.0-5) (2025-04-28)
 
 ## [3.0.0-4](https://github.com/Infomaximum/module-expander/compare/v3.0.0-3...v3.0.0-4) (2025-04-25)
