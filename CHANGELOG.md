@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-10](https://github.com/Infomaximum/module-expander/compare/v2.6.2...v3.0.0-10) (2025-04-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* переписан механизм подключения модулей
+
+* feat: подключение модуля если все зависимости были зарезолвлены
+
+* chore(release): 3.0.0-0
+
+* refactor: заменил функции lodash
+
+* chore(release): 3.0.0-1
+
+* fix: переименован резолвер модуля
+
+* chore(release): 3.0.0-2
+
+* feat: добавлена возможность использовать асинхронные функции
+
+* ci: prerelease
+
+* chore(release): 3.0.0-3
+
+* ci: prerelease
+
+* chore(release): 3.0.0-4
+
+* chore(release): 3.0.0-5
+
+* fix: IRoutes -> IRoute
+
+* chore(release): 3.0.0-6
+
+* refactor: удалены лишние типы
+
+* chore(release): 3.0.0-7
+
+* fix: types
+
+* chore(release): 3.0.0-8
+
+* feat: добавлен readonly
+
+* chore(release): 3.0.0-9
+
+* Динамическое подключение модулей (#2) ([1996641](https://github.com/Infomaximum/module-expander/commit/1996641609a87711f5a56f203014a21de074af75)), closes [#2](https://github.com/Infomaximum/module-expander/issues/2)
+
 ## [3.0.0-9](https://github.com/Infomaximum/module-expander/compare/v3.0.0-8...v3.0.0-9) (2025-04-30)
 
 
