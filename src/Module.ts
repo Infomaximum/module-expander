@@ -2,10 +2,10 @@ import type { ErrorPayload, Route } from "./Interfaces";
 import type { Awaitable } from "./utils";
 
 export interface IModule {
-  moduleId: string;
+  readonly moduleId: string;
 
   /** список прямых зависимостей модуля без которых он не будет подключаться. */
-  dependencies: (typeof Module)[];
+  readonly dependencies: (typeof Module)[];
 
   /** Список роутов добавляемых модулем */
   getRoutesConfig?(): Awaitable<Route[]>;
@@ -49,7 +49,7 @@ export abstract class Module implements IModule {
     return constructor._instance;
   }
 
-  public abstract moduleId: string;
+  public abstract readonly moduleId: string;
 
-  public abstract dependencies: (typeof Module)[];
+  public abstract readonly dependencies: (typeof Module)[];
 }
