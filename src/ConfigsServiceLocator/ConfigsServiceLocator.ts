@@ -1,22 +1,9 @@
 type TClass = new (...args: any[]) => any;
 
 class ConfigsServiceLocator {
-  private registeredClasses?: WeakMap<TClass, InstanceType<TClass>>;
-  private isInitialize = false;
+  private registeredClasses = new WeakMap<TClass, InstanceType<TClass>>();
 
-  private init() {
-    this.registeredClasses = new WeakMap<TClass, InstanceType<TClass>>();
-    this.isInitialize = true;
-  }
-
-  public register<T extends TClass, K extends InstanceType<T>>(
-    Class: T,
-    instance: K
-  ) {
-    if (!this.isInitialize) {
-      this.init();
-    }
-
+  public register<T extends TClass, K extends InstanceType<T>>(Class: T, instance: K) {
     this.registeredClasses?.set(Class, instance);
   }
 

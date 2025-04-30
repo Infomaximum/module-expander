@@ -1,41 +1,49 @@
-import "reflect-metadata";
 import {
-  isFunction,
-  forEach,
-  map,
-  orderBy,
-  every,
-  isArray,
-  isUndefined,
-  isBoolean,
-} from "lodash";
-import {
-  type IModuleExpander,
-  ModuleExpander,
-} from "../ModuleExpander/ModuleExpander";
-import { expandRoutes, expandErrorHandlers, expandTheme } from "../utils";
-import type { NCore } from "../Interfaces";
-import type { TModuleInjectParams } from "../defineModule/defineModule";
+  expandRoutes,
+  expandErrorHandlers,
+  expandTheme,
+  type Nullable,
+  type Awaitable,
+} from "../utils";
+import type { ErrorPayload, Route } from "../Interfaces";
+import type { IModule, Module } from "../Module";
 
 type TModuleMapSorted = {
-  module: IModuleExpander;
+  module: IModule;
   /**
    * счетчик количества зависимостей от модуля
    */
   count: number;
 };
 
+export type ResolveModuleEntry = () => Promise<typeof Module>;
+
+export type ModuleMetadata = {
+  /** флаг отвечающий за подключение модуля
+   *
+   * `undefined`_(по умолчанию)_ - модуль будет подключаться если модуль подключен на сервере
+   * и все модули от которых зависит этот модуль подключены
+   *
+   * `true` - модуль будет подключаться вне зависимости подключен ли он на сервере или нет,
+   * но с учетом того, что все модули от которых зависит этот модуль подключены
+   *
+   * `false` - модуль не будет подключен, даже если он подключен на сервере */
+  isConnect?: boolean | undefined;
+};
+
+type ModuleWithMetadata = {
+  resolveModuleEntry: ResolveModuleEntry;
+  metadata: ModuleMetadata;
+};
+
 export class Expander {
   private static instance: Expander;
-  private modules: IModuleExpander[] = [];
-  private routes: NCore.IRoutes[] = [];
-  private entrypointList: (() => void)[] = [];
-  private errorsConfig: NCore.TErrorPreparer[] = [];
-  private featuresConfig: NCore.TFeaturesConfig = {
-    featureList: {},
-    featureGroupList: {},
-    licenseFeatureList: {},
-  };
+  private modules = new Map<string, ModuleWithMetadata>();
+  private resolvedModules = new Set<IModule>();
+  private routes: Route[] = [];
+  private entrypointList: Awaitable<(() => void) | null>[] = [];
+  private errorsConfig: ErrorPayload[] = [];
+  private featuresConfig: Record<string, unknown> = {};
   private theme: Record<string, any> = {};
 
   /** Флаг указывает на то, что приложение готово к вызову entrypoints */
@@ -56,20 +64,6 @@ export class Expander {
 
   private constructor() {}
 
-  private getInjectModuleParams(module: IModuleExpander): TModuleInjectParams {
-    return Reflect.getMetadata(ModuleExpander.moduleInjectParamsKey, module);
-  }
-
-  private getDependencies(module: IModuleExpander): string[] {
-    const directDependencies = this.getInjectModuleParams(module).dependencies;
-
-    return directDependencies?.map((m) => m.moduleName);
-  }
-
-  private getModuleName(module: IModuleExpander): string | undefined {
-    return this.getInjectModuleParams(module).moduleName;
-  }
-
   /**
    * сортировка от количества зависимостей, модули, от которых больше всего зависимостей
    * будут подключаться первыми
@@ -80,11 +74,9 @@ export class Expander {
 
     const dependencies = new Map<string, TModuleMapSorted>();
 
-    forEach(this.modules, (module) => {
-      const name = this.getModuleName(module);
-
-      if (!!name) {
-        dependencies.set(name, {
+    this.resolvedModules.values().forEach((module) => {
+      if (!!module) {
+        dependencies.set(module.moduleId, {
           [moduleName]: module,
           [countName]: 0,
         });
@@ -92,10 +84,10 @@ export class Expander {
     });
 
     dependencies.forEach((params) => {
-      const directDependencies = this.getDependencies(params[moduleName]);
+      const directDependencies = params[moduleName].dependencies.map((d) => d.instance.moduleId);
 
-      isArray(directDependencies) &&
-        forEach(directDependencies, (dependency) => {
+      Array.isArray(directDependencies) &&
+        directDependencies.forEach((dependency) => {
           const dependencyMeta = dependencies.get(dependency);
 
           if (dependencyMeta) {
@@ -107,19 +99,22 @@ export class Expander {
         });
     });
 
-    return map(
-      orderBy(Array.from(dependencies.values()), countName, "desc"),
-      moduleName
-    );
+    return Array.from(dependencies.values())
+      .sort((a, b) => b[countName] - a[countName])
+      .map((entry) => entry[moduleName]);
   }
 
-  public expandModules(module: IModuleExpander) {
-    this.modules.push(module);
+  public registerModule(
+    moduleId: string,
+    resolveModuleEntry: ResolveModuleEntry,
+    metadata: ModuleMetadata
+  ) {
+    this.modules.set(moduleId, { resolveModuleEntry, metadata });
 
     return this;
   }
 
-  private expandRoutes(routesConfig: NCore.IRoutes[] | undefined) {
+  private expandRoutes(routesConfig: Nullable<Route[]>) {
     if (routesConfig) {
       expandRoutes(this.routes, routesConfig);
     }
@@ -127,7 +122,7 @@ export class Expander {
     return this;
   }
 
-  private expandErrorsConfig(errorsConfig: NCore.TErrorPreparer[] | undefined) {
+  private expandErrorsConfig(errorsConfig: Nullable<ErrorPayload[]>) {
     if (errorsConfig) {
       expandErrorHandlers(this.errorsConfig, errorsConfig);
     }
@@ -135,58 +130,25 @@ export class Expander {
     return this;
   }
 
-  private expandFeaturesConfig(
-    featuresConfig: NCore.TFeaturesConfigFuncs | null
-  ) {
-    if (featuresConfig) {
-      if (isFunction(featuresConfig.featureList)) {
-        Object.assign(
-          this.featuresConfig.featureList,
-          featuresConfig.featureList()
-        );
-      }
-
-      if (isFunction(featuresConfig.featureGroupList)) {
-        Object.assign(
-          this.featuresConfig.featureGroupList,
-          featuresConfig.featureGroupList()
-        );
-      }
-
-      if (isFunction(featuresConfig.licenseFeatureList)) {
-        Object.assign(
-          this.featuresConfig.licenseFeatureList,
-          featuresConfig.licenseFeatureList()
-        );
-      }
+  private expandFeaturesConfig(featuresConfig: Nullable<Record<string, unknown>>) {
+    if (!featuresConfig) {
+      return this;
     }
+
+    Object.keys(featuresConfig).forEach((key) => {
+      if (key && !this.featuresConfig[key]) {
+        this.featuresConfig[key] = {};
+      }
+
+      if (this.featuresConfig[key]) {
+        Object.assign(this.featuresConfig[key], featuresConfig[key]);
+      }
+    });
 
     return this;
   }
 
-  private expandExtendersConfig(
-    extendersConfig: NCore.TExtendersConfig | undefined
-  ) {
-    if (extendersConfig) {
-      forEach(extendersConfig, (extenderFunc) => {
-        if (extenderFunc && isFunction(extenderFunc)) {
-          extenderFunc();
-        }
-      });
-    }
-
-    return this;
-  }
-
-  private expandLaunchEffect(launchEffect: (() => void) | null) {
-    if (isFunction(launchEffect)) {
-      launchEffect();
-    }
-
-    return this;
-  }
-
-  private expandEntryPoint(entrypoint: (() => void) | null) {
+  private expandEntryPoint(entrypoint: Awaitable<(() => void) | null>) {
     if (entrypoint) {
       this.entrypointList.push(entrypoint);
     }
@@ -194,15 +156,7 @@ export class Expander {
     return this;
   }
 
-  private expandModels(expandModels: (() => void) | null) {
-    if (isFunction(expandModels)) {
-      expandModels();
-    }
-
-    return this;
-  }
-
-  private expandTheme(theme: Record<string, any> | undefined) {
+  private expandTheme(theme: Nullable<Record<string, any>>) {
     if (theme) {
       expandTheme(this.theme, theme);
     }
@@ -218,7 +172,7 @@ export class Expander {
     return this.errorsConfig;
   }
 
-  public getFeaturesConfig(): NCore.TFeaturesConfig {
+  public getFeaturesConfig(): Record<string, unknown> {
     return this.featuresConfig;
   }
 
@@ -226,47 +180,22 @@ export class Expander {
     return this.theme;
   }
 
-  /**
-   * описание логики работа в описании типа `TModuleInjectParams["isConnect"]`
-   */
-  private isConnectModule(
-    module: IModuleExpander,
-    resolvedModules: Set<string>,
-    subsystemsIds: Set<string> | undefined
-  ) {
-    if (subsystemsIds === undefined) {
-      return true;
-    }
-
-    const { isConnect, moduleName, dependencies } =
-      this.getInjectModuleParams(module);
+  private isConnectModule(module: typeof Module, subsystemsIds: Set<string>) {
+    const { instance } = module;
 
     const isAllDependenciesAllowed =
-      isArray(dependencies) &&
+      Array.isArray(instance.dependencies) &&
       /* c resolvedModules могут быть проблемы, если модуль зависит от модуля с наименьшим числом зависимостей,
       поэтому проверяем в крайнем случае и возможность модуля подключиться в дальнейшем (не безопасно, но и не нужно)
        */
-      every(
-        dependencies,
+      instance.dependencies.every(
         (dependency) =>
-          resolvedModules.has(dependency.moduleName) ||
-          subsystemsIds.has(dependency.moduleName)
+          this.resolvedModules.has(dependency.instance) ||
+          subsystemsIds.has(dependency.instance.moduleId)
       );
 
-    if (
-      isUndefined(isConnect) &&
-      isAllDependenciesAllowed &&
-      subsystemsIds.has(moduleName)
-    ) {
+    if (isAllDependenciesAllowed && subsystemsIds.has(instance.moduleId)) {
       return true;
-    }
-
-    if (isBoolean(isConnect) && isConnect && isAllDependenciesAllowed) {
-      return true;
-    }
-
-    if (isBoolean(isConnect) && !isConnect) {
-      return false;
     }
 
     return false;
@@ -284,43 +213,105 @@ export class Expander {
     }
   }
 
+  public async connectModule(module: IModule) {
+    await module.registerModels?.();
+
+    this.expandRoutes(await module.getRoutesConfig?.());
+    this.expandErrorsConfig(await module.getErrorsConfig?.());
+    this.expandFeaturesConfig(await module.getFeaturesConfig?.());
+
+    await module.registerExtensions?.();
+
+    this.expandTheme(await module.getThemeConfig?.());
+
+    await module.onInitialize?.();
+
+    this.expandEntryPoint(() => module.getEntrypoint?.());
+
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.log(`${module.constructor?.name} init`);
+    }
+  }
+
+  public async resolveDependencies(modules: (typeof Module)[]) {
+    for await (const module of modules) {
+      if (!this.resolvedModules.has(module.instance)) {
+        this.resolvedModules.add(module.instance);
+      }
+
+      if (module.instance.dependencies?.length) {
+        await this.resolveDependencies(module.instance.dependencies);
+      }
+    }
+  }
+
+  private async buildAllModules() {
+    for await (const [, { resolveModuleEntry }] of this.modules) {
+      const module = await resolveModuleEntry();
+
+      this.resolvedModules.add(module.instance);
+
+      await this.resolveDependencies(module.instance.dependencies);
+    }
+  }
+
+  private async buildByModuleIds(subsystemsIds: Set<string>) {
+    const modules = this.modules.entries().reduce((acc, [moduleId, module]) => {
+      if (
+        !acc.has(module) &&
+        ((subsystemsIds.has(moduleId) && module.metadata.isConnect !== false) ||
+          module.metadata.isConnect)
+      ) {
+        acc.add(module);
+      }
+
+      return acc;
+    }, new Set<ModuleWithMetadata>());
+
+    for await (const { resolveModuleEntry } of modules) {
+      const module = await resolveModuleEntry();
+
+      if (!this.isConnectModule(module, subsystemsIds)) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.error(
+            `Модуль c id = ${module.instance.moduleId} не подключен, так как не были зарезолвлены все неободимые зависимости`
+          );
+        }
+
+        continue;
+      }
+
+      this.resolvedModules.add(module.instance);
+
+      await this.resolveDependencies(module.instance.dependencies);
+    }
+  }
+
   /**
    * Метод расширения всех конфигов
    */
-  public build(subsystemsIds: Set<string> | undefined) {
-    const resolvedModules = new Set<string>();
+  public async build(subsystemsIds: Set<string> | undefined) {
+    if (!subsystemsIds?.size) {
+      await this.buildAllModules();
+    } else {
+      await this.buildByModuleIds(subsystemsIds);
+    }
 
-    forEach(this.sortedModules, (module) => {
-      const { moduleName } = this.getInjectModuleParams(module);
-
-      if (this.isConnectModule(module, resolvedModules, subsystemsIds)) {
-        this.expandModels(module.getModelsConfig())
-          .expandRoutes(module.getRoutes()?.())
-          .expandErrorsConfig(module.getErrorsConfig()?.())
-          .expandFeaturesConfig(module.getFeaturesConfig())
-          .expandExtendersConfig(module.getExtendersConfig()?.())
-          .expandTheme(module.getThemeConfig()?.())
-          .expandLaunchEffect(module.getLaunchEffect())
-          .expandEntryPoint(module.getEntrypoint());
-
-        resolvedModules.add(moduleName);
-
-        if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
-          console.log(`${module.constructor?.name} init`);
-        }
-      }
-    });
+    for await (const module of this.sortedModules) {
+      await this.connectModule(module);
+    }
 
     this.isReadyApp = true;
     // Обязательно вызов функций должен быть после расширения всех конфигов и до вызова entrypoints
-    forEach(this.whenAppReadyCallbacks, (callback) => callback());
+    this.whenAppReadyCallbacks.forEach((callback) => callback());
 
     // Обязательно, вызов этих функций должен быть последним
-    this.entrypointList.forEach((entrypointGetter) => {
-      if (isFunction(entrypointGetter)) {
+    for await (const entrypointGetter of this.entrypointList) {
+      if (typeof entrypointGetter === "function") {
         entrypointGetter();
       }
-    });
+    }
   }
 }

@@ -1,19 +1,18 @@
 import { forEach, uniq, sortBy, isPlainObject, set } from "lodash";
 import { assertSimple } from "@infomaximum/assert";
-import type { NCore } from "./Interfaces";
+import type { ErrorPayload, Route } from "./Interfaces";
+
+export type Nullable<T> = T | null | undefined;
+export type Awaitable<T> = T | Promise<T>;
 
 /**
  * Метод для расширения конфига роутинга
- * @param {NCore.IRoutes[]} mainRoutes - config роутинга, который нужно расширить
- * @param {NCore.IRoutes[]} addingRoutes - config роутинга, которым нужно расширить
+ * @param {Route[]} mainRoutes - config роутинга, который нужно расширить
+ * @param {Route[]} addingRoutes - config роутинга, которым нужно расширить
  */
-export const expandRoutes = (
-  mainRoutes: NCore.IRoutes[],
-  addingRoutes: NCore.IRoutes[]
-): void => {
+export const expandRoutes = (mainRoutes: Route[], addingRoutes: Route[]): void => {
   forEach(addingRoutes, (addingRoute) => {
-    const { key, routes, childRoutesFilter, ...restOfAddingRoute } =
-      addingRoute;
+    const { key, routes, childRoutesFilter, ...restOfAddingRoute } = addingRoute;
 
     const mainRoute = mainRoutes?.find((route) => route.key === key);
 
@@ -33,26 +32,8 @@ export const expandRoutes = (
       if (typeof childRoutesFilter === "function") {
         if (typeof mainRoute.childRoutesFilter === "function") {
           const originChildRoute = mainRoute.childRoutesFilter;
-          mainRoute.childRoutesFilter = function (
-            route,
-            isFeatureEnabled,
-            location,
-            otherParamFilter
-          ) {
-            return (
-              originChildRoute(
-                route,
-                isFeatureEnabled,
-                location,
-                otherParamFilter
-              ) &&
-              childRoutesFilter(
-                route,
-                isFeatureEnabled,
-                location,
-                otherParamFilter
-              )
-            );
+          mainRoute.childRoutesFilter = function (...args) {
+            return originChildRoute(...args) && childRoutesFilter(...args);
           };
         } else {
           mainRoute.childRoutesFilter = childRoutesFilter;
@@ -70,19 +51,21 @@ export const expandRoutes = (
   });
 };
 
-export const sortErrorHandlers = (errorHandlers: NCore.TErrorPreparer[]) =>
-  sortBy(errorHandlers, (preparer: NCore.TErrorPreparer) => {
-    if (preparer.params) {
-      if (Array.isArray(preparer.params)) {
-        return -preparer.params.length;
-      }
-      if (isPlainObject(preparer.params)) {
-        return -Object.keys(preparer.params).length;
-      }
-      assertSimple(false, "Не поддерживаемый тип параметров");
-    } else {
+export const sortErrorHandlers = (preparedErrors: ErrorPayload[]) =>
+  sortBy(preparedErrors, (error: ErrorPayload) => {
+    if (!error.params) {
       return 0;
     }
+
+    if (Array.isArray(error.params)) {
+      return -error.params.length;
+    }
+
+    if (isPlainObject(error.params)) {
+      return -Object.keys(error.params).length;
+    }
+
+    assertSimple(false, "Не поддерживаемый тип параметров");
   });
 
 /**
@@ -91,29 +74,11 @@ export const sortErrorHandlers = (errorHandlers: NCore.TErrorPreparer[]) =>
  * @param addingErrorHandlers - расширяющий список обработчиков
  */
 export const expandErrorHandlers = (
-  mainErrorHandlers: NCore.TErrorPreparer[],
-  addingErrorHandlers: NCore.TErrorPreparer[]
+  mainErrorHandlers: ErrorPayload[],
+  addingErrorHandlers: ErrorPayload[]
 ) => {
   mainErrorHandlers.push(...addingErrorHandlers);
-  mainErrorHandlers.splice(
-    0,
-    mainErrorHandlers.length,
-    ...sortErrorHandlers(mainErrorHandlers)
-  );
-};
-
-export const showGlobalErrorModal = () => {
-  const spinner = document.getElementById("spinner-wrapper");
-  const element = document.getElementById("internal-error");
-
-  if (spinner) {
-    spinner.style.display = "none";
-  }
-
-  if (element) {
-    (window as any).isRejectionRequired = true;
-    element.style.display = "block";
-  }
+  mainErrorHandlers.splice(0, mainErrorHandlers.length, ...sortErrorHandlers(mainErrorHandlers));
 };
 
 /**
@@ -121,9 +86,6 @@ export const showGlobalErrorModal = () => {
  * @param mainTheme - объект темы, который нужно расширить
  * @param addingTheme - объект темы, которым нужно расширить
  */
-export const expandTheme = (
-  mainTheme: Record<string, any>,
-  addingTheme: Record<string, any>
-) => {
+export const expandTheme = (mainTheme: Record<string, any>, addingTheme: Record<string, any>) => {
   Object.assign(mainTheme, addingTheme);
 };

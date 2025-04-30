@@ -5,7 +5,10 @@
     "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true,
     "allowJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "declarationDir": "dts",
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false
   },
   "exclude": ["/node_modules/", "**/node_modules", "**/.*/"],
   "include": ["src"]
