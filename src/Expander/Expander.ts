@@ -246,7 +246,7 @@ export class Expander {
     }
   }
 
-  private async buildAllModules() {
+  private async resolveAllModules() {
     for await (const [, { resolveModuleEntry }] of this.modules) {
       const module = await resolveModuleEntry();
 
@@ -256,7 +256,7 @@ export class Expander {
     }
   }
 
-  private async buildByModuleIds(subsystemsIds: Set<string>) {
+  private async resolveByModuleIds(subsystemsIds: Set<string>) {
     const modules = this.modules.entries().reduce((acc, [moduleId, module]) => {
       if (
         !acc.has(module) &&
@@ -294,9 +294,9 @@ export class Expander {
    */
   public async build(subsystemsIds: Set<string> | undefined) {
     if (!subsystemsIds?.size) {
-      await this.buildAllModules();
+      await this.resolveAllModules();
     } else {
-      await this.buildByModuleIds(subsystemsIds);
+      await this.resolveByModuleIds(subsystemsIds);
     }
 
     for await (const module of this.sortedModules) {
