@@ -74,7 +74,7 @@ export class Expander {
 
     const dependencies = new Map<string, TModuleMapSorted>();
 
-    this.resolvedModules.values().forEach((module) => {
+    this.resolvedModules.forEach((module) => {
       if (!!module) {
         dependencies.set(module.moduleId, {
           [moduleName]: module,
@@ -83,8 +83,8 @@ export class Expander {
       }
     });
 
-    dependencies.forEach((params) => {
-      const directDependencies = params[moduleName].dependencies.map((d) => d.instance.moduleId);
+    this.resolvedModules.forEach((module) => {
+      const directDependencies = module.dependencies.map((d) => d.instance.moduleId);
 
       Array.isArray(directDependencies) &&
         directDependencies.forEach((dependency) => {
