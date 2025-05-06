@@ -39,7 +39,6 @@ type ModuleWithMetadata = {
 export class Expander {
   private static instance: Expander;
   private modules = new Map<string, ModuleWithMetadata>();
-  private resolvedModules = new Set<IModule>();
   private routes: Route[] = [];
   private entrypointList: Awaitable<(() => void) | null>[] = [];
   private errorsConfig: ErrorPayload[] = [];
@@ -68,13 +67,13 @@ export class Expander {
    * сортировка от количества зависимостей, модули, от которых больше всего зависимостей
    * будут подключаться первыми
    */
-  private get sortedModules() {
+  private getSortedModules(modules: Set<IModule>) {
     const countName = "count" as const;
     const moduleName = "module" as const;
 
     const dependencies = new Map<string, TModuleMapSorted>();
 
-    this.resolvedModules.forEach((module) => {
+    modules.forEach((module) => {
       if (!!module) {
         dependencies.set(module.moduleId, {
           [moduleName]: module,
@@ -83,7 +82,7 @@ export class Expander {
       }
     });
 
-    this.resolvedModules.forEach((module) => {
+    modules.forEach((module) => {
       const directDependencies = module.dependencies.map((d) => d.instance.moduleId);
 
       Array.isArray(directDependencies) &&
@@ -180,7 +179,11 @@ export class Expander {
     return this.theme;
   }
 
-  private isConnectModule(module: typeof Module, subsystemsIds: Set<string>) {
+  private isConnectModule(
+    module: typeof Module,
+    subsystemsIds: Set<string>,
+    resolvedModules: Set<IModule>
+  ) {
     const { instance } = module;
 
     const isAllDependenciesAllowed =
@@ -190,7 +193,7 @@ export class Expander {
        */
       instance.dependencies.every(
         (dependency) =>
-          this.resolvedModules.has(dependency.instance) ||
+          resolvedModules.has(dependency.instance) ||
           subsystemsIds.has(dependency.instance.moduleId)
       );
 
@@ -234,72 +237,75 @@ export class Expander {
     }
   }
 
-  public async resolveDependencies(modules: (typeof Module)[]) {
+  public async resolveDependencies(modules: (typeof Module)[], resolvedModules: Set<IModule>) {
     for await (const module of modules) {
-      if (!this.resolvedModules.has(module.instance)) {
-        this.resolvedModules.add(module.instance);
+      if (!resolvedModules.has(module.instance)) {
+        resolvedModules.add(module.instance);
       }
 
       if (module.instance.dependencies?.length) {
-        await this.resolveDependencies(module.instance.dependencies);
+        await this.resolveDependencies(module.instance.dependencies, resolvedModules);
       }
     }
   }
 
   private async resolveAllModules() {
+    const resolvedModules = new Set<IModule>();
+
     for await (const [, { resolveModuleEntry }] of this.modules) {
       const module = await resolveModuleEntry();
 
-      this.resolvedModules.add(module.instance);
+      resolvedModules.add(module.instance);
 
-      await this.resolveDependencies(module.instance.dependencies);
+      await this.resolveDependencies(module.instance.dependencies, resolvedModules);
     }
+
+    return this.getSortedModules(resolvedModules);
   }
 
   private async resolveByModuleIds(subsystemsIds: Set<string>) {
-    const modules = this.modules.entries().reduce((acc, [moduleId, module]) => {
-      if (
-        !acc.has(module) &&
-        ((subsystemsIds.has(moduleId) && module.metadata.isConnect !== false) ||
-          module.metadata.isConnect)
-      ) {
-        acc.add(module);
-      }
+    const resolvedModules = new Set<IModule>();
+    const instances = new Set<IModule>();
 
-      return acc;
-    }, new Set<ModuleWithMetadata>());
-
-    for await (const { resolveModuleEntry } of modules) {
+    for await (const { resolveModuleEntry } of this.modules.values()) {
       const module = await resolveModuleEntry();
 
-      if (!this.isConnectModule(module, subsystemsIds)) {
-        if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
-          console.error(
-            `Модуль c id = ${module.instance.moduleId} не подключен, так как не были зарезолвлены все неободимые зависимости`
-          );
-        }
+      instances.add(module.instance);
+
+      if (!this.isConnectModule(module, subsystemsIds, resolvedModules)) {
+        // if (process.env.NODE_ENV !== "production") {
+        //   // eslint-disable-next-line no-console
+        //   console.error(
+        //     `Модуль c id = ${module.instance.moduleId} не подключен, так как не были зарезолвлены все неободимые зависимости`
+        //   );
+        // }
 
         continue;
       }
 
-      this.resolvedModules.add(module.instance);
+      resolvedModules.add(module.instance);
 
-      await this.resolveDependencies(module.instance.dependencies);
+      await this.resolveDependencies(module.instance.dependencies, resolvedModules);
     }
+
+    const sortedModules = this.getSortedModules(instances);
+
+    return sortedModules.filter((m) => resolvedModules.has(m));
   }
 
   /**
    * Метод расширения всех конфигов
    */
   public async build(subsystemsIds: Set<string> | undefined) {
+    let modules: IModule[];
+
     if (!subsystemsIds?.size) {
-      await this.resolveAllModules();
+      modules = await this.resolveAllModules();
     } else {
-      await this.resolveByModuleIds(subsystemsIds);
+      modules = await this.resolveByModuleIds(subsystemsIds);
     }
 
-    for await (const module of this.sortedModules) {
+    for await (const module of modules) {
       await this.connectModule(module);
     }
 
