@@ -1,11 +1,17 @@
 import type { ErrorPayload, Route } from "./Interfaces";
 import type { Awaitable } from "./utils";
 
+interface ModelRegistry {
+  extends(registry: ModelRegistry): void;
+}
+
 export interface IModule {
   readonly moduleId: string;
 
   /** список прямых зависимостей модуля без которых он не будет подключаться. */
   readonly dependencies: (typeof Module)[];
+
+  readonly modelRegistry: ModelRegistry;
 
   /** Список роутов добавляемых модулем */
   getRoutesConfig?(): Awaitable<Route[]>;
@@ -20,7 +26,7 @@ export interface IModule {
   /** Расширения модуля  */
   registerExtensions?(): Awaitable<void>;
   /** Модели модуля */
-  registerModels?(): Awaitable<void>;
+  registerModels?(): Awaitable<ModelRegistry>;
   /** Побочные эффекты при инициализации модуля */
   onInitialize?(): Awaitable<void>;
 }
@@ -52,4 +58,6 @@ export abstract class Module implements IModule {
   public abstract readonly moduleId: string;
 
   public abstract readonly dependencies: (typeof Module)[];
+
+  public abstract readonly modelRegistry: ModelRegistry;
 }
