@@ -274,9 +274,13 @@ export class Expander {
     }, new Set<ModuleWithMetadata>());
 
     for (const { resolveModuleEntry, metadata } of modules) {
+      if (metadata.isConnect === false) {
+        continue;
+      }
+
       const module = await resolveModuleEntry();
 
-      if (metadata.isConnect !== true && !this.isConnectModule(module, subsystemsIds)) {
+      if (!this.isConnectModule(module, subsystemsIds)) {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console
           console.error(
