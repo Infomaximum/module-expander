@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.2](https://github.com/Infomaximum/module-expander/compare/v3.0.1...v3.0.2) (2025-07-29)
+
+
+### Bug Fixes
+
+* исправлен флаг принудительного отключения модуля ([87f431f](https://github.com/Infomaximum/module-expander/commit/87f431f3cb53034066c519ad5ba2731c1cc788ff))
+
 ### [3.0.1](https://github.com/Infomaximum/module-expander/compare/v3.0.0...v3.0.1) (2025-07-29)
 
 
