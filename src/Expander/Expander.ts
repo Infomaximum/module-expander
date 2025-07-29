@@ -235,7 +235,7 @@ export class Expander {
   }
 
   public async resolveDependencies(modules: (typeof Module)[]) {
-    for await (const module of modules) {
+    for (const module of modules) {
       if (!this.resolvedModules.has(module.instance)) {
         this.resolvedModules.add(module.instance);
       }
@@ -247,7 +247,11 @@ export class Expander {
   }
 
   private async resolveAllModules() {
-    for await (const [, { resolveModuleEntry }] of this.modules) {
+    for (const [, { resolveModuleEntry, metadata }] of this.modules) {
+      if (metadata.isConnect === false) {
+        continue;
+      }
+
       const module = await resolveModuleEntry();
 
       this.resolvedModules.add(module.instance);
@@ -269,10 +273,10 @@ export class Expander {
       return acc;
     }, new Set<ModuleWithMetadata>());
 
-    for await (const { resolveModuleEntry } of modules) {
+    for (const { resolveModuleEntry, metadata } of modules) {
       const module = await resolveModuleEntry();
 
-      if (!this.isConnectModule(module, subsystemsIds)) {
+      if (metadata.isConnect !== true && !this.isConnectModule(module, subsystemsIds)) {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console
           console.error(
@@ -299,7 +303,7 @@ export class Expander {
       await this.resolveByModuleIds(subsystemsIds);
     }
 
-    for await (const module of this.sortedModules) {
+    for (const module of this.sortedModules) {
       await this.connectModule(module);
     }
 
