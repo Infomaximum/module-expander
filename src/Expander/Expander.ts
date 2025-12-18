@@ -180,7 +180,7 @@ export class Expander {
     return this.theme;
   }
 
-  private isConnectModule(module: typeof Module, subsystemsIds: Set<string>) {
+  private isConnectModule(module: typeof Module, subsystemsIds: Set<string>, metadata: ModuleMetadata) {
     const { instance } = module;
 
     const isAllDependenciesAllowed =
@@ -194,7 +194,7 @@ export class Expander {
           subsystemsIds.has(dependency.instance.moduleId)
       );
 
-    if (isAllDependenciesAllowed && subsystemsIds.has(instance.moduleId)) {
+    if (isAllDependenciesAllowed && (subsystemsIds.has(instance.moduleId) || metadata.isConnect)) {
       return true;
     }
 
@@ -280,7 +280,7 @@ export class Expander {
 
       const module = await resolveModuleEntry();
 
-      if (!this.isConnectModule(module, subsystemsIds)) {
+      if (!this.isConnectModule(module, subsystemsIds, metadata)) {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console
           console.error(
