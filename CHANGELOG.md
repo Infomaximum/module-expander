@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.3](https://github.com/Infomaximum/module-expander/compare/v3.0.2...v3.0.3) (2025-12-18)
+
+
+### Bug Fixes
+
+* исправлено игнорирование флага isConnect ([5729387](https://github.com/Infomaximum/module-expander/commit/572938744a4bbb7542d53c827b9980a9060bf225))
+
 ### [3.0.2](https://github.com/Infomaximum/module-expander/compare/v3.0.1...v3.0.2) (2025-07-29)
 
 
