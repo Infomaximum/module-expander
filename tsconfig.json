@@ -9,7 +9,8 @@
     "noEmit": true,
     "declarationDir": "dts",
     "experimentalDecorators": false,
-    "emitDecoratorMetadata": false
+    "emitDecoratorMetadata": false,
+    "types": ["node"]
   },
   "exclude": ["/node_modules/", "**/node_modules", "**/.*/"],
   "include": ["src"]

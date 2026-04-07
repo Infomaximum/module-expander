@@ -21,6 +21,8 @@ export interface IModule {
   registerExtensions?(): Awaitable<void>;
   /** Модели модуля */
   registerModels?(): Awaitable<void>;
+  /** Локализации модуля */
+  loadLocale?(): Promise<void>;
   /** Побочные эффекты при инициализации модуля */
   onInitialize?(): Awaitable<void>;
 }

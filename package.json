@@ -21,7 +21,7 @@
     "@rollup/plugin-node-resolve": "15.2.3",
     "@rollup/plugin-typescript": "11.1.6",
     "@types/lodash": "4.17.7",
-    "@types/node": "14.0.1",
+    "@types/node": "^25.5.0",
     "cross-env": "7.0.3",
     "husky": "^8.0.0",
     "jira-prepare-commit-msg": "1.6.2",
