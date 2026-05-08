@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0-0](https://github.com/Infomaximum/module-expander/compare/v3.0.3...v3.1.0-0) (2026-05-08)
+
+
+### Features
+
+* добавлена поддержка локализации в модулях ([2e75609](https://github.com/Infomaximum/module-expander/commit/2e75609f65f2bea615d20dff0f45aae58d716d8f))
+
 ### [3.0.3](https://github.com/Infomaximum/module-expander/compare/v3.0.2...v3.0.3) (2025-12-18)
 
 
