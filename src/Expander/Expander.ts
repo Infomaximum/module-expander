@@ -51,6 +51,7 @@ export class Expander {
 
   /** Callback-функции, которые должны быть запущены после подключения всех модулей */
   private whenAppReadyCallbacks: (() => void)[] = [];
+  private loadLocaleCallbacks: (() => Promise<void>)[] = [];
 
   public static getInstance(): Expander {
     if (Expander.instance) {
@@ -164,6 +165,24 @@ export class Expander {
     return this;
   }
 
+  private expandLocale(loadLocaleCallback: (() => Promise<void>) | undefined) {
+    if (loadLocaleCallback) {
+      this.loadLocaleCallbacks.push(loadLocaleCallback);
+    }
+
+    return this;
+  }
+
+  public async loadLocalization() {
+    const promises: Promise<void>[] = [];
+
+    for (const loadCallback of this.loadLocaleCallbacks) {
+      promises.push(loadCallback());
+    }
+
+    await Promise.all(promises);
+  }
+
   public getRoutes() {
     return this.routes;
   }
@@ -180,7 +199,11 @@ export class Expander {
     return this.theme;
   }
 
-  private isConnectModule(module: typeof Module, subsystemsIds: Set<string>, metadata: ModuleMetadata) {
+  private isConnectModule(
+    module: typeof Module,
+    subsystemsIds: Set<string>,
+    metadata: ModuleMetadata
+  ) {
     const { instance } = module;
 
     const isAllDependenciesAllowed =
@@ -216,6 +239,7 @@ export class Expander {
   public async connectModule(module: IModule) {
     await module.registerModels?.();
 
+    this.expandLocale(module.loadLocale);
     this.expandRoutes(await module.getRoutesConfig?.());
     this.expandErrorsConfig(await module.getErrorsConfig?.());
     this.expandFeaturesConfig(await module.getFeaturesConfig?.());
